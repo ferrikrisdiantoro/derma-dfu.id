@@ -1,0 +1,41 @@
+# DERMA-DFU.ID — Deployment via Traefik yang sudah ada di server.
+# Container hanya attach ke network 'n8n_default' (Traefik) — TIDAK buat network baru,
+# TIDAK publish port ke host (routing sepenuhnya via Traefik).
+# Domain: baca dari .env variable DOMAIN
+
+services:
+  derma-dfu-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: derma-dfu-web
+    restart: unless-stopped
+    networks:
+      - traefik_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=n8n_default"
+
+      # HTTP (auto redirect ke HTTPS via config traefik existing)
+      - "traefik.http.routers.derma-dfu-web.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.derma-dfu-web.entrypoints=web"
+
+      # HTTPS + Let's Encrypt (resolver 'mytlschallenge' sudah dikonfigurasi di traefik)
+      - "traefik.http.routers.derma-dfu-web-secure.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.derma-dfu-web-secure.entrypoints=websecure"
+      - "traefik.http.routers.derma-dfu-web-secure.tls=true"
+      - "traefik.http.routers.derma-dfu-web-secure.tls.certresolver=mytlschallenge"
+
+      # Service pointing (port dalam container: nginx listen 80)
+      - "traefik.http.services.derma-dfu-web.loadbalancer.server.port=80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  traefik_net:
+    external: true
+    name: n8n_default
