@@ -159,11 +159,10 @@ export default function Triage() {
     summary: any
   ) => {
     try {
+      // DEMO MODE: kalau belum login, skip DB save biar tetap bisa dipakai.
       const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) {
-        toast.error(t("Silakan login terlebih dahulu", "Please login first"));
-        navigate("/auth");
+        console.log("[demo] skip save to DB — user not logged in");
         return null;
       }
 
@@ -420,17 +419,8 @@ export default function Triage() {
 
   // ======================= ANALISIS =======================
   const handleSubmit = async () => {
-    // Check authentication first
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error(t(
-        "Silakan login terlebih dahulu untuk menggunakan fitur analisis",
-        "Please login first to use the analysis feature"
-      ));
-      navigate("/auth");
-      return;
-    }
-
+    // DEMO MODE — auth di-bypass supaya bisa dicoba tanpa login.
+    // Data tetap coba disimpan; kalau gagal (belum login), abaikan.
     if (inFlightRef.current) { toast.message(t("Analisis sedang berjalan…", "Analysis is already running…")); return; }
     if (!formData.photo || !preview) { toast.error(t("Mohon unggah foto terlebih dahulu", "Please upload a photo first")); return; }
 
