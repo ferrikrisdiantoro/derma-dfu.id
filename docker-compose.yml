@@ -15,6 +15,8 @@ services:
     labels:
       # Pattern samain dengan kontainer lain yang sudah work (kone-crm)
       - "traefik.enable=true"
+      # Explicit network — Traefik 3.x butuh ini kalau container attach multiple network
+      - "traefik.docker.network=n8n_default"
       - "traefik.http.routers.dermadfu.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.dermadfu.entrypoints=web,websecure"
       - "traefik.http.routers.dermadfu.tls=true"
