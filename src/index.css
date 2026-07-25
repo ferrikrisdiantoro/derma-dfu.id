@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Base colors */
+    --background: 0 0% 100%;
+    --foreground: 220 20% 10%;
+    
+    /* Navy headings */
+    --heading: 211 86% 29%;
+    
+    /* Body text */
+    --body: 220 20% 10%;
+
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    /* Primary - Bright Green */
+    --primary: 145 100% 39%;
+    --primary-foreground: 0 0% 100%;
+
+    /* CTA - Bright Blue */
+    --cta: 217 91% 60%;
+    --cta-foreground: 0 0% 100%;
+
+    /* Accent - Sky Blue */
+    --accent: 195 100% 46%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Secondary */
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 220 20% 10%;
+
+    /* Muted */
+    --muted: 210 20% 96%;
+    --muted-foreground: 220 10% 46%;
+
+    /* Warning - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Danger/Destructive - Red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Triage colors */
+    --triage-red: 0 72% 51%;
+    --triage-red-foreground: 0 0% 100%;
+    --triage-yellow: 38 92% 50%;
+    --triage-yellow-foreground: 0 0% 100%;
+    --triage-green: 145 100% 39%;
+    --triage-green-foreground: 0 0% 100%;
+    
+    /* Pink hearts decoration */
+    --decoration-pink: 336 100% 59%;
+
+    /* Border & Input */
+    --border: 214 20% 85%;
+    --input: 214 20% 85%;
+    --ring: 211 86% 29%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 220 20% 10%;
+    --foreground: 0 0% 98%;
+    
+    --heading: 195 100% 70%;
+    --body: 0 0% 95%;
+
+    --card: 220 20% 13%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 20% 13%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 145 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --cta: 217 91% 65%;
+    --cta-foreground: 0 0% 100%;
+
+    --accent: 195 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 20%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 15% 20%;
+    --muted-foreground: 215 15% 65%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --triage-red: 0 72% 55%;
+    --triage-red-foreground: 0 0% 100%;
+    --triage-yellow: 38 92% 55%;
+    --triage-yellow-foreground: 0 0% 100%;
+    --triage-green: 145 100% 45%;
+    --triage-green-foreground: 0 0% 100%;
+    
+    --decoration-pink: 336 100% 65%;
+
+    --border: 220 15% 25%;
+    --input: 220 15% 25%;
+    --ring: 195 100% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-body;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-heading;
+  }
+}
+
+@layer utilities {
+  .hearts-decoration {
+    background-image: 
+      radial-gradient(circle, hsl(var(--decoration-pink) / 0.1) 2px, transparent 2px),
+      radial-gradient(circle, hsl(var(--decoration-pink) / 0.08) 1.5px, transparent 1.5px);
+    background-size: 80px 80px, 120px 120px;
+    background-position: 0 0, 40px 40px;
+  }
+  
+  .min-touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}

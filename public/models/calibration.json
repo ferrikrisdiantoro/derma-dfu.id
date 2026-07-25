@@ -1,0 +1,18 @@
+{
+  "_notes": "Kalibrasi untuk model ResNet50 hasil BAB 5 grid search (best config: LR=1e-3, Dropout=0.2, Unfreeze=60%). Threshold Youden's J diambil dari validation set. Preprocessing: RESNET50_CAFFE (RGB->BGR + subtract ImageNet mean).",
+  "model": "ResNet50 (DFU_Classifier)",
+  "model_source": "BAB 5 - Hasil Training/dfu_artifacts/onnx_model.onnx",
+  "preprocessing": "RESNET50_CAFFE",
+  "ischaemia_threshold": 0.5367,
+  "infection_threshold": 0.2884,
+  "clf_input_size": 256,
+  "labels_4class": ["None", "Infection", "Ischaemia", "Both"],
+  "test_metrics": {
+    "accuracy": 0.8427,
+    "macro_f1": 0.8528,
+    "cohen_kappa": 0.7440,
+    "auc_infection_present": 0.9255,
+    "auc_ischaemia_present": 0.9851,
+    "parity_keras_vs_onnx": 1.0
+  }
+}
