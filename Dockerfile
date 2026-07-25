@@ -31,9 +31,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy build output dari stage 1
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+# NO HEALTHCHECK — Traefik skip container yang "unhealthy" di beberapa versi.
+# Nginx crash otomatis exit, restart policy handle-nya di compose.
 
 EXPOSE 80
 
