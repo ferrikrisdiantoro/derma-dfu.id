@@ -591,79 +591,189 @@ export default function Triage() {
 
   // ===================== RENDER =====================
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-20">
-      {/* Status model */}
-      <div className="flex items-center justify-end">
-        <span
-          className={`text-xs rounded-full px-2 py-1 ${modelReady ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-            : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-            }`}
-          title={CLF_MODEL_SHA ? `SHA: ${CLF_MODEL_SHA}` : undefined}
-        >
-          {modelReady ? t("AI siap", "AI ready") : t("AI belum siap (akan dimuat saat analisis)", "AI not ready (will load on analyze)")}
-        </span>
-      </div>
+    <div className="space-y-8 max-w-5xl mx-auto pb-24 animate-rise">
+      {/* ============ HERO ============ */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-hero p-6 sm:p-10 text-white shadow-floating">
+        <div className="absolute inset-0 bg-grid opacity-20" aria-hidden />
+        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" aria-hidden />
+        <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-accent/25 blur-3xl" aria-hidden />
 
-      {/* Upload */}
-      <Card className="rounded-2xl shadow-md">
-        <CardHeader>
-          <CardTitle>{t("Unggah Foto Luka", "Upload Wound Photo")}</CardTitle>
-          <CardDescription>
-            {t("Ambil foto dari atas, jarak 30–40 cm, dengan pencahayaan yang baik", "Take photo from above, 30–40 cm distance, with good lighting")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col gap-4">
-            {/* Hidden input for gallery */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              className="hidden"
-              disabled={loading}
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                onClick={() => setShowCameraModal(true)}
-                variant="outline"
-                className="min-touch-target rounded-2xl"
-                disabled={loading}
-              >
-                <Camera className="mr-2 h-5 w-5" />{t("Ambil Foto", "Take Photo")}
-              </Button>
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                variant="outline"
-                className="min-touch-target rounded-2xl"
-                disabled={loading}
-              >
-                <Upload className="mr-2 h-5 w-5" />{t("Unggah dari Galeri", "Upload from Gallery")}
-              </Button>
-            </div>
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <span className="chip border-white/25 bg-white/10 text-white backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+              {modelReady
+                ? t("AI siap menganalisis", "AI ready to analyze")
+                : t("AI memuat…", "AI loading…")}
+            </span>
+            <h1 className="text-2xl font-extrabold leading-tight text-white sm:text-4xl">
+              {t("Triase Luka Kaki Diabetik", "Diabetic Foot Ulcer Triage")}
+              <br />
+              <span className="text-white/85">
+                {t("dalam 3 langkah cepat.", "in 3 quick steps.")}
+              </span>
+            </h1>
+            <p className="max-w-xl text-sm text-white/90 sm:text-base">
+              {t(
+                "Unggah foto luka, isi keluhan singkat, dan dapatkan rekomendasi triase MERAH/KUNING/HIJAU berbasis AI.",
+                "Upload the wound photo, answer a few quick questions, and get an AI-assisted RED/YELLOW/GREEN triage recommendation."
+              )}
+            </p>
+          </div>
 
-            {/* Preview + Overlay */}
-            {preview && (
-              <div className="relative rounded-2xl overflow-hidden border-2 border-border">
-                <img
-                  ref={imgRef}
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-auto max-h-[70vh] select-none"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <canvas
-                  ref={overlayRef}
-                  className="absolute inset-0 w-full h-full"
-                  onClick={onOverlayClick}
-                />
+          {/* Steps mini */}
+          <div className="grid grid-cols-3 gap-2 text-[10px] font-semibold uppercase tracking-widest text-white/80 sm:min-w-[280px] sm:text-xs">
+            {[
+              { n: "1", label: t("Foto", "Photo") },
+              { n: "2", label: t("Keluhan", "Symptoms") },
+              { n: "3", label: t("Hasil", "Result") },
+            ].map((s) => (
+              <div
+                key={s.n}
+                className="flex flex-col items-center gap-1.5 rounded-2xl border border-white/20 bg-white/10 py-3 backdrop-blur"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-heading text-sm font-bold">
+                  {s.n}
+                </span>
+                <span>{s.label}</span>
               </div>
-            )}
+            ))}
+          </div>
+        </div>
+      </section>
 
-            {/* Kalibrasi ukuran */}
-            <div className="rounded-xl border p-3 space-y-3">
-              <div className="flex items-center gap-2">
+      {/* ============ UPLOAD ZONE ============ */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-heading sm:text-xl">
+              {t("1. Unggah Foto Luka", "1. Upload Wound Photo")}
+            </h2>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              {t(
+                "Ambil dari atas · jarak 30–40 cm · pencahayaan cukup terang.",
+                "Take from above · 30–40 cm away · well-lit."
+              )}
+            </p>
+          </div>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoUpload}
+          className="hidden"
+          disabled={loading}
+        />
+
+        {!preview ? (
+          // Drop zone besar
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loading}
+            className="group relative flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-3xl border-2 border-dashed border-primary/30 bg-primary-soft/50 p-10 text-center transition-all hover:border-primary hover:bg-primary-soft hover:shadow-glow sm:p-14"
+          >
+            <div className="absolute inset-0 bg-dots opacity-40" aria-hidden />
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-elevated transition-transform group-hover:scale-110 sm:h-20 sm:w-20">
+              <Upload className="h-8 w-8 text-primary sm:h-10 sm:w-10" strokeWidth={2} />
+            </div>
+            <div className="relative space-y-1">
+              <p className="text-base font-semibold text-heading sm:text-lg">
+                {t("Klik untuk unggah foto luka", "Click to upload wound photo")}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {t("PNG, JPG, atau WebP · maks 20 MB", "PNG, JPG, or WebP · max 20 MB")}
+              </p>
+            </div>
+            <div className="relative flex items-center gap-3 pt-2">
+              <span className="h-px w-8 bg-border" />
+              <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                {t("atau", "or")}
+              </span>
+              <span className="h-px w-8 bg-border" />
+            </div>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={(e) => { e.stopPropagation(); setShowCameraModal(true); }}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); setShowCameraModal(true); } }}
+              className="relative inline-flex items-center gap-2 rounded-full bg-heading px-5 py-2.5 text-sm font-semibold text-white shadow-elevated transition-all hover:bg-heading/90 hover:shadow-floating"
+            >
+              <Camera className="h-4 w-4" />
+              {t("Ambil Foto dengan Kamera", "Take Photo with Camera")}
+            </div>
+          </button>
+        ) : (
+          // Preview modern dengan chip info + tombol ganti
+          <div className="space-y-3">
+            <div className="relative overflow-hidden rounded-3xl border border-border bg-surface shadow-elevated">
+              <img
+                ref={imgRef}
+                src={preview}
+                alt="Preview"
+                className="h-auto max-h-[70vh] w-full select-none object-contain"
+                loading="lazy"
+                decoding="async"
+              />
+              <canvas
+                ref={overlayRef}
+                className="absolute inset-0 h-full w-full"
+                onClick={onOverlayClick}
+              />
+              {/* Chip di sudut foto */}
+              <div className="pointer-events-none absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                {t("Foto siap dianalisis", "Photo ready to analyze")}
+              </div>
+              {/* Action buttons floating di bawah kanan */}
+              <div className="absolute bottom-4 right-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                  className="rounded-full bg-surface/90 px-4 py-2 text-xs font-semibold text-heading shadow-elevated backdrop-blur transition-all hover:bg-surface"
+                >
+                  <Upload className="mr-1.5 inline h-3.5 w-3.5" />
+                  {t("Ganti", "Change")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCameraModal(true)}
+                  disabled={loading}
+                  className="rounded-full bg-heading/90 px-4 py-2 text-xs font-semibold text-white shadow-elevated backdrop-blur transition-all hover:bg-heading"
+                >
+                  <Camera className="mr-1.5 inline h-3.5 w-3.5" />
+                  {t("Kamera", "Camera")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============ KALIBRASI UKURAN (optional collapsible) ============ */}
+        <details className="group rounded-2xl border border-border bg-surface open:shadow-soft" open={!!preview}>
+          <summary className="flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4 hover:bg-muted/50">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft">
+                <Ruler className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-semibold text-heading">
+                  {t("Kalibrasi ukuran (opsional)", "Size calibration (optional)")}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {t("Aktifkan biar hasil area dalam cm²", "Enable to show wound area in cm²")}
+                </div>
+              </div>
+            </div>
+            <span className="text-xs font-medium text-muted-foreground transition-transform group-open:rotate-180">
+              ▾
+            </span>
+          </summary>
+          <div className="space-y-3 border-t border-border/60 p-4 pt-4">
+              <div className="hidden">
                 <Ruler className="h-4 w-4 text-cta" />
                 <span className="text-sm font-medium">
                   {t("Kalibrasi ukuran", "Size calibration (to show cm²)")}
@@ -737,14 +847,22 @@ export default function Triage() {
                   </Label>
                 </div>
               </div>
-            </div>
           </div>
-        </CardContent>
-      </Card>
+        </details>
+      </section>
 
-      {/* Form klinis */}
-      <Card className="rounded-2xl shadow-md">
-        <CardHeader>
+      {/* ============ FORM KLINIS ============ */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-heading sm:text-xl">
+            {t("2. Informasi Klinis", "2. Clinical Information")}
+          </h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {t("Isi seakurat mungkin — makin lengkap makin baik triase-nya.", "Fill in as accurately as possible — more info means better triage.")}
+          </p>
+        </div>
+      <Card className="rounded-2xl shadow-soft border-border/70">
+        <CardHeader className="hidden">
           <CardTitle>{t("Informasi Luka & Kesehatan", "Wound & Health Information")}</CardTitle>
         </CardHeader>
 
@@ -875,9 +993,14 @@ export default function Triage() {
           </Collapsible>
         </CardContent>
       </Card>
+      </section>
 
-      {/* Hasil */}
+      {/* ============ HASIL ============ */}
       {triageResult && publicSummary && (
+        <section className="space-y-4 animate-rise">
+          <h2 className="text-lg font-bold text-heading sm:text-xl">
+            {t("3. Hasil Triase", "3. Triage Result")}
+          </h2>
         <Card className={`rounded-2xl shadow-md ${getTriageColor(triageResult)}`}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -928,11 +1051,12 @@ export default function Triage() {
             </div>
           </CardContent>
         </Card>
+        </section>
       )}
 
       <Button
         onClick={handleSubmit}
-        className="w-full min-touch-target rounded-2xl bg-cta text-cta-foreground hover:bg-cta/90"
+        className="w-full min-touch-target rounded-2xl bg-accent hover:bg-accent-hover text-accent-foreground font-semibold shadow-elevated hover:shadow-floating"
         size="lg"
         disabled={loading || inFlightRef.current}
       >
