@@ -13,21 +13,13 @@ services:
     networks:
       - traefik_net
     labels:
+      # Pattern samain dengan kontainer lain yang sudah work (kone-crm)
       - "traefik.enable=true"
-      - "traefik.docker.network=n8n_default"
-
-      # HTTP (auto redirect ke HTTPS via config traefik existing)
-      - "traefik.http.routers.derma-dfu-web.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.derma-dfu-web.entrypoints=web"
-
-      # HTTPS + Let's Encrypt (resolver 'mytlschallenge' sudah dikonfigurasi di traefik)
-      - "traefik.http.routers.derma-dfu-web-secure.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.derma-dfu-web-secure.entrypoints=websecure"
-      - "traefik.http.routers.derma-dfu-web-secure.tls=true"
-      - "traefik.http.routers.derma-dfu-web-secure.tls.certresolver=mytlschallenge"
-
-      # Service pointing (port dalam container: nginx listen 80)
-      - "traefik.http.services.derma-dfu-web.loadbalancer.server.port=80"
+      - "traefik.http.routers.dermadfu.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.dermadfu.entrypoints=web,websecure"
+      - "traefik.http.routers.dermadfu.tls=true"
+      - "traefik.http.routers.dermadfu.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.dermadfu.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
