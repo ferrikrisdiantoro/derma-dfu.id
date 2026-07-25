@@ -1,7 +1,8 @@
 # DERMA-DFU.ID — Deployment via Traefik yang sudah ada di server.
-# Container hanya attach ke network 'n8n_default' (Traefik) — TIDAK buat network baru,
+# Container attach ke network 'n8n_default' (Traefik) — TIDAK buat network baru,
 # TIDAK publish port ke host (routing sepenuhnya via Traefik).
 # Domain: baca dari .env variable DOMAIN
+# Pattern mengikuti landing/kone-crm yang sudah works.
 
 services:
   derma-dfu-web:
@@ -10,26 +11,22 @@ services:
       dockerfile: Dockerfile
     container_name: derma-dfu-web
     restart: unless-stopped
-    networks:
-      - traefik_net
     labels:
-      # Pattern samain dengan kontainer lain yang sudah work (kone-crm)
-      - "traefik.enable=true"
-      # Explicit network — Traefik 3.x butuh ini kalau container attach multiple network
-      - "traefik.docker.network=n8n_default"
-      - "traefik.http.routers.dermadfu.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.dermadfu.entrypoints=web,websecure"
-      - "traefik.http.routers.dermadfu.tls=true"
-      - "traefik.http.routers.dermadfu.tls.certresolver=mytlschallenge"
-      - "traefik.http.services.dermadfu.loadbalancer.server.port=80"
+      - traefik.enable=true
+      - traefik.http.routers.dermadfu.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.dermadfu.tls=true
+      - traefik.http.routers.dermadfu.entrypoints=web,websecure
+      - traefik.http.routers.dermadfu.tls.certresolver=mytlschallenge
+      - traefik.http.services.dermadfu.loadbalancer.server.port=80
+    networks:
+      - n8n_default
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
 
 networks:
-  traefik_net:
+  n8n_default:
     external: true
-    name: n8n_default
